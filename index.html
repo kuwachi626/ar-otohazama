@@ -1,0 +1,48 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><link rel="icon" href="data:">
+<title>AR Otohazama</title>
+</head>
+<body>
+
+<header>
+  <h1>AR Otohazama</h1>
+  LIB: <a href=https://github.com/code4fukui/ar-globe/>AR Globe</a>, <a href="https://github.com/code4fukui/egxr.js/">egxr.js</a><br>
+  APP: <a href="https://github.com/code4fukui/ar-earthquakes/">src on GitHub</a><br>
+</header>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://code4fukui.github.io/three.js/build/three.module.js",
+    "three/addons/": "https://code4fukui.github.io/three.js/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import { THREE, scene, camera, renderer } from "https://code4fukui.github.io/egxr.js/egxr.js";
+import { rnd } from "https://js.sabae.cc/rnd.js";
+
+const grp = new THREE.Group();
+
+const list = [];
+for (let i = 0; i < 20; i++) {
+  const geometry = new THREE.BoxGeometry(.5, .1, 1);
+  const color = rnd(0x1000000);
+  const material = new THREE.MeshBasicMaterial({ color }); 
+  const cube = new THREE.Mesh(geometry, material);
+  const note = rnd(12);
+  cube.position.x = (note - 6) * .5;
+  cube.position.z = -i;
+  grp.add(cube);
+}
+scene.add(grp);
+
+const clock = new THREE.Clock();
+renderer.setAnimationLoop(() => {
+  grp.position.z += .01;
+  renderer.render(scene, camera);
+});
+
+</script>
+</body>
+</html>
