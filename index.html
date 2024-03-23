@@ -39,25 +39,53 @@
 
   const controllerModelFactory = new XRControllerModelFactory();
 
-  function addController(index) {
   // コントローラの追加
-  const controller = renderer.xr.getController(index);
-  scene.add(controller);
+  const controller0 = renderer.xr.getController(0);
+  scene.add(controller0);
+
+  const controller1 = renderer.xr.getController(1);
+  scene.add(controller1);
 
   // コントローラモデルの追加
-  const controllerGrip = renderer.xr.getControllerGrip(index);
-  controllerGrip.add(
-    controllerModelFactory.createControllerModel(controllerGrip)
+  const controllerGrip0 = renderer.xr.getControllerGrip(0);
+  controllerGrip0.add(
+    controllerModelFactory.createControllerModel(controllerGrip0)
   );
-  scene.add(controllerGrip);
+  scene.add(controllerGrip0);
 
+  const controllerGrip1 = renderer.xr.getControllerGrip(1);
+  controllerGrip1.add(
+    controllerModelFactory.createControllerModel(controllerGrip1)
+  );
+  scene.add(controllerGrip1);
+
+
+  function checkCollision(controller0, controller1) {
+    // コントローラの位置を取得
+    const controllerPosition0 = controller0.position;
+    const controllerPosition1 = controller1.position;
+
+    // スタートの位置を取得
+    const startPosition = start.position;
+
+    // コントローラとスタートの距離を計算
+    const distance0 = controllerPosition0.distanceTo(startPosition);
+    const distance1 = controllerPosition1.distanceTo(startPosition);
+
+    // 一定の距離以下であれば衝突が発生したとみなす
+    const collisionThreshold = 0.1;
+
+    if (distance0 <= collisionThreshold || distance1 <= collisionThreshold) {
+      scene.remove(start);
+      scene.remove(starttxt);
+      scene.remove(textobj);
+      scene.remove(grp);
+      music2.play();
+    }
   }
-
-  // コントローラの準備
-  const controller0 = addController(0);
-  const controller1 = addController(1);
   
   const music = new Audio("./sound/title.mp3");
+  const music2 = new Audio("./sound/maou_bgm_piano40.mp3");
   let flg = false;
   
   const textobj = new THREE.Group();
@@ -150,20 +178,20 @@
   const clock = new THREE.Clock();
   renderer.setAnimationLoop(() => {
     grp.position.z += .01;
-    // console.log(grp.position.z)
+
     if (grp.position.z > 20) {
       grp.position.z = -19;
     }
     if (textobj.position.z < 15) {
       textobj.position.z += .01;
-      // console.log(textobj.position.z)
     }
     if (textobj.position.z > 15 & flg === false) {
       flg = true
       music.play("title");
-      scene.add(start)
-      scene.add(starttxt)
+      scene.add(start);
+      scene.add(starttxt);
     }
+    checkCollision(controller0, controller1)
     renderer.render(scene, camera);
   });
   
