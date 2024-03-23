@@ -1,3 +1,3 @@
 # ar-otohazama
  
-https://code4fukui.github.io/ar-otohazama/
+https://kuwachi626.github.io/ar-otohazama/
