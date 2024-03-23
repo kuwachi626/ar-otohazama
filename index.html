@@ -141,6 +141,7 @@
     const cube = new THREE.Mesh(geometry, material);
     const note = rnd(12);
     cube.position.x = (note - 6) * .5;
+    cube.position.y = -0.5;
     cube.position.z = -i;
     grp.add(cube);
   }
