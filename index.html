@@ -23,6 +23,39 @@
   import { rnd } from "https://js.sabae.cc/rnd.js";
   import { FontLoader } from 'three/addons/loaders/FontLoader.js';
   import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+  import { createTextMesh } from "./createTextMesh.js";
+  import { XRControllerModelFactory } from "https://code4fukui.github.io/three.js/examples/jsm/webxr/XRControllerModelFactory.js";
+
+  export const createSphere = (str, size, color) => {
+    const g = new THREE.Group();
+    const geo = new THREE.SphereGeometry(size, 15, 32);
+    const mat = new THREE.MeshBasicMaterial({ color, opacity: 0.6, transparent: true });
+    const mesh = new THREE.Mesh(geo, mat);
+    g.add(mesh);
+    const txt = createTextMesh(str, 0, 0, 0, 0xffffff);
+    g.add(txt);
+    return g;
+  };
+
+  const controllerModelFactory = new XRControllerModelFactory();
+
+  function addController(index) {
+  // コントローラの追加
+  const controller = renderer.xr.getController(index);
+  scene.add(controller);
+
+  // コントローラモデルの追加
+  const controllerGrip = renderer.xr.getControllerGrip(index);
+  controllerGrip.add(
+    controllerModelFactory.createControllerModel(controllerGrip)
+  );
+  scene.add(controllerGrip);
+
+  }
+
+  // コントローラの準備
+  const controller0 = addController(0);
+  const controller1 = addController(1);
   
   const music = new Audio("./sound/title.mp3");
   let flg = false;
@@ -92,6 +125,11 @@
     textobj.add(text3)
   })
   scene.add(textobj)
+
+  const staposi = new THREE.Vector3(0, -0.3, -0.5);
+  const start = createSphere("S", 0.1, 0x00ffff);
+  start.position.copy(staposi);
+  const starttxt = createTextMesh("START", 0, -0.1, -0.5);
   
   const grp = new THREE.Group();
   
@@ -111,17 +149,19 @@
   const clock = new THREE.Clock();
   renderer.setAnimationLoop(() => {
     grp.position.z += .01;
-    console.log(grp.position.z)
+    // console.log(grp.position.z)
     if (grp.position.z > 20) {
       grp.position.z = -19;
     }
     if (textobj.position.z < 15) {
       textobj.position.z += .01;
-      console.log(textobj.position.z)
+      // console.log(textobj.position.z)
     }
     if (textobj.position.z > 15 & flg === false) {
       flg = true
       music.play("title");
+      scene.add(start)
+      scene.add(starttxt)
     }
     renderer.render(scene, camera);
   });
